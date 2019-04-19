@@ -1,14 +1,24 @@
 package com.jpa.entity;
 
 import com.jpa.listeners.DeveloperListener;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
+import javax.persistence.ManyToMany;
+import javax.persistence.CascadeType;
+import javax.persistence.FetchType;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @EntityListeners(DeveloperListener.class)
 @Table(name = "developers")
@@ -18,13 +28,13 @@ public class Developer extends AbstractIdentifiableObject{
     private String name;
 
     @Column
-    private int age;
+    private Integer age;
 
     @Column(name = "sex")
     private boolean isMale;
 
     @Column
-    private int salary;
+    private Integer salary;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
@@ -32,12 +42,5 @@ public class Developer extends AbstractIdentifiableObject{
             joinColumns = @JoinColumn(name = "developer_id"),
             inverseJoinColumns = @JoinColumn(name = "project_id")
     )
-    private List<Project> projects;
-
-    public Developer(String name, int age, boolean isMale, int salary) {
-        this.name = name;
-        this.age = age;
-        this.isMale = isMale;
-        this.salary = salary;
-    }
+   private List<Project> projects;
 }

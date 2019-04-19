@@ -15,6 +15,5 @@ public abstract class AbstractIdentifiableObject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     @Setter
-    private int id;
-
+    private Integer id;
 }
