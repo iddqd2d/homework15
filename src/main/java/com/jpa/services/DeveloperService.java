@@ -16,9 +16,9 @@ public class DeveloperService implements Service<Developer> {
             entityManager.getTransaction().begin();
             developer = entityManager.find(Developer.class, id);
             entityManager.getTransaction().commit();
-        } catch (Exception ex) {
-            entityManager.getTransaction().rollback();
-            log.error(ex.getMessage());
+            entityManager.close();
+        } catch (RuntimeException ex) {
+            exceptionCatcher(entityManager, ex);
         } finally {
             entityManager.close();
         }
@@ -31,9 +31,8 @@ public class DeveloperService implements Service<Developer> {
             entityManager.getTransaction().begin();
             entityManager.persist(developer);
             entityManager.getTransaction().commit();
-        } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+        } catch (RuntimeException ex) {
+            exceptionCatcher(entityManager, ex);
         } finally {
             entityManager.close();
         }
@@ -45,9 +44,8 @@ public class DeveloperService implements Service<Developer> {
             entityManager.getTransaction().begin();
             entityManager.merge(developer);
             entityManager.getTransaction().commit();
-        } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+        } catch (RuntimeException ex) {
+            exceptionCatcher(entityManager, ex);
         } finally {
             entityManager.close();
         }
@@ -59,11 +57,15 @@ public class DeveloperService implements Service<Developer> {
             entityManager.getTransaction().begin();
             entityManager.remove(entityManager.contains(developer) ? developer : entityManager.merge(developer));
             entityManager.getTransaction().commit();
-        } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+        } catch (RuntimeException ex) {
+            exceptionCatcher(entityManager, ex);
         } finally {
             entityManager.close();
         }
+    }
+
+    private void exceptionCatcher(EntityManager entityManager, RuntimeException e) {
+        entityManager.getTransaction().rollback();
+        log.error(e.getMessage());
     }
 }

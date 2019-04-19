@@ -31,7 +31,7 @@ public class Developer extends AbstractIdentifiableObject{
     private Integer age;
 
     @Column(name = "sex")
-    private boolean isMale;
+    private Boolean isMale;
 
     @Column
     private Integer salary;

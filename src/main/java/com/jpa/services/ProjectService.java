@@ -18,9 +18,8 @@ public class ProjectService implements Service<Project> {
             entityManager.getTransaction().begin();
             project = entityManager.find(Project.class, id);
             entityManager.getTransaction().commit();
-        } catch (Exception ex) {
-            entityManager.getTransaction().rollback();
-            log.error(ex.getMessage());
+        } catch (RuntimeException e) {
+            exceptionCatcher(entityManager, e);
         } finally {
             entityManager.close();
         }
@@ -34,8 +33,7 @@ public class ProjectService implements Service<Project> {
             entityManager.persist(project);
             entityManager.getTransaction().commit();
         } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+            exceptionCatcher(entityManager, e);
         } finally {
             entityManager.close();
         }
@@ -48,8 +46,7 @@ public class ProjectService implements Service<Project> {
             entityManager.merge(project);
             entityManager.getTransaction().commit();
         } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+            exceptionCatcher(entityManager, e);
         } finally {
             entityManager.close();
         }
@@ -62,10 +59,14 @@ public class ProjectService implements Service<Project> {
             entityManager.remove(entityManager.contains(project) ? project : entityManager.merge(project));
             entityManager.getTransaction().commit();
         } catch (RuntimeException e) {
-            entityManager.getTransaction().rollback();
-            log.error(e.getMessage());
+            exceptionCatcher(entityManager, e);
         } finally {
             entityManager.close();
         }
+    }
+
+    private void exceptionCatcher(EntityManager entityManager, RuntimeException e) {
+        entityManager.getTransaction().rollback();
+        log.error(e.getMessage());
     }
 }
